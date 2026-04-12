@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Encube – Marketing Planning Rhythm</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  @font-face {
+    font-family: 'Aeonik';
+    src: url('https://public.getencube.com/Encube-Brand-Assets/ai-assets/claude-skills/encube-brand-guidelines/assets/fonts/Aeonik/Aeonik-Medium.otf') format('opentype');
+    font-weight: 500;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', Arial, sans-serif;
+    background: #F7F7F7;
+    color: #17181D;
+    padding: 48px 40px 64px;
+    min-height: 100vh;
+  }
+
+  /* Dot grid background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: radial-gradient(circle, rgba(23,24,29,0.12) 1.2px, transparent 1.2px);
+    background-size: 32px 32px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Header */
+  .header {
+    margin-bottom: 48px;
+  }
+
+  .section-label {
+    font-family: 'Inter', Arial, sans-serif;
+    font-weight: 500;
+    font-size: 13px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #7D39ED;
+    margin-bottom: 10px;
+  }
+
+  h1 {
+    font-family: 'Aeonik', Arial, sans-serif;
+    font-weight: 500;
+    font-size: 36px;
+    letter-spacing: -0.02em;
+    line-height: 0.9;
+    color: #17181D;
+    margin-top: -0.1em;
+  }
+
+  .subtitle {
+    font-size: 15px;
+    color: #51566D;
+    margin-top: 12px;
+    line-height: 1.5;
+  }
+
+  /* Card */
+  .card {
+    background: #FFFFFF;
+    border: 1px solid #DEDFE2;
+    border-radius: 12px;
+    padding: 28px 28px 24px;
+    margin-bottom: 16px;
+  }
+
+  .card-label {
+    font-family: 'Inter', Arial, sans-serif;
+    font-weight: 500;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #7D39ED;
+    margin-bottom: 16px;
+  }
+
+  /* Timeline row */
+  .timeline {
+    display: flex;
+    gap: 0;
+    position: relative;
+    margin-bottom: 4px;
+  }
+
+  .period-block {
+    flex: 1;
+    position: relative;
+  }
+
+  .period-pill {
+    background: #17181D;
+    color: #F7F7F7;
+    border-radius: 8px;
+    padding: 10px 12px 10px;
+    margin: 0 4px;
+    text-align: center;
+  }
+
+  .period-pill .period-name {
+    font-family: 'Aeonik', Arial, sans-serif;
+    font-weight: 500;
+    font-size: 15px;
+    letter-spacing: -0.01em;
+    display: block;
+  }
+
+  .period-pill .period-dates {
+    font-size: 11px;
+    color: #9299A7;
+    display: block;
+    margin-top: 2px;
+  }
+
+  /* Planning sessions row */
+  .sessions-row {
+    display: flex;
+    gap: 0;
+    margin-top: 32px;
+    position: relative;
+  }
+
+  /* Planning dot + line visual */
+  .session-slot {
+    flex: 1;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  /* The vertical connector from planning dot to period */
+  .session-connector {
+    position: absolute;
+    top: -32px;
+    width: 1px;
+    height: 32px;
+    background: #DEDFE2;
+  }
+
+  /* Session shifted: planering sits at end of previous period (right edge offset) */
+  .session-slot:not(:first-child) .session-connector {
+    left: -1px;
+  }
+  .session-slot:first-child .session-connector {
+    display: none;
+  }
+
+  .session-badge {
+    background: #7D39ED;
+    color: #F7F7F7;
+    border-radius: 8px;
+    padding: 10px 14px;
+    text-align: center;
+    width: calc(100% - 8px);
+    margin: 0 4px;
+  }
+
+  .session-badge.offset {
+    /* Visual shift: session lives at END of previous period */
+    transform: translateX(-50%);
+    position: relative;
+    left: -2px;
+  }
+
+  /* First session has no offset – it's the start */
+  .session-slot:first-child .session-badge {
+    transform: none;
+    left: 0;
+  }
+
+  .session-badge .session-name {
+    font-family: 'Aeonik', Arial, sans-serif;
+    font-weight: 500;
+    font-size: 14px;
+    display: block;
+  }
+
+  .session-badge .session-sub {
+    font-size: 11px;
+    color: #D8C4FF;
+    margin-top: 2px;
+    display: block;
+  }
+
+  /* Rolling 3 section */
+  .rolling-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 10px;
+    margin-top: 4px;
+  }
+
+  .rolling-card {
+    border-radius: 8px;
+    padding: 14px 14px 12px;
+    border: 1px solid transparent;
+  }
+
+  .rolling-card.locked {
+    background: #17181D;
+    border-color: #3A3D44;
+  }
+
+  .rolling-card.review {
+    background: #F7F7F7;
+    border-color: #7D39ED;
+  }
+
+  .rolling-card.draft {
+    background: #F7F7F7;
+    border-color: #DEDFE2;
+  }
+
+  .rolling-tag {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border-radius: 4px;
+    display: inline-block;
+    margin-bottom: 8px;
+  }
+
+  .locked .rolling-tag {
+    background: #3A3D44;
+    color: #9299A7;
+  }
+
+  .review .rolling-tag {
+    background: #D8C4FF;
+    color: #4A14A1;
+  }
+
+  .draft .rolling-tag {
+    background: #EEEEEE;
+    color: #51566D;
+  }
+
+  .rolling-card .rolling-title {
+    font-family: 'Aeonik', Arial, sans-serif;
+    font-weight: 500;
+    font-size: 16px;
+    letter-spacing: -0.01em;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .locked .rolling-title { color: #F7F7F7; }
+  .review .rolling-title { color: #17181D; }
+  .draft .rolling-title { color: #17181D; }
+
+  .rolling-card .rolling-desc {
+    font-size: 12px;
+    line-height: 1.4;
+  }
+
+  .locked .rolling-desc { color: #9299A7; }
+  .review .rolling-desc { color: #51566D; }
+  .draft .rolling-desc { color: #9299A7; }
+
+  /* Arrow between rolling cards */
+  .rolling-arrows {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 10px;
+    margin-top: -2px;
+    margin-bottom: 2px;
+  }
+
+  .rolling-arrow-cell {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 11px;
+    color: #9299A7;
+    gap: 4px;
+  }
+
+  .rolling-arrow-cell svg {
+    flex-shrink: 0;
+  }
+
+  /* Input section */
+  .input-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 4px;
+  }
+
+  .input-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 12px 14px;
+    background: #F7F7F7;
+    border-radius: 8px;
+    border: 1px solid #EEEEEE;
+  }
+
+  .input-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #7D39ED;
+    flex-shrink: 0;
+    margin-top: 5px;
+  }
+
+  .input-text {
+    font-size: 13px;
+    color: #17181D;
+    line-height: 1.4;
+  }
+
+  .input-text strong {
+    font-weight: 500;
+    display: block;
+    margin-bottom: 2px;
+  }
+
+  .input-text span {
+    color: #51566D;
+    font-size: 12px;
+  }
+
+  /* Always on section */
+  .always-on-bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 18px;
+    background: #17181D;
+    border-radius: 8px;
+    margin-top: 4px;
+  }
+
+  .always-on-label {
+    font-family: 'Inter', Arial, sans-serif;
+    font-weight: 500;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #7D39ED;
+    white-space: nowrap;
+  }
+
+  .always-on-divider {
+    width: 1px;
+    height: 20px;
+    background: #3A3D44;
+    flex-shrink: 0;
+  }
+
+  .always-on-items {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .always-on-pill {
+    font-size: 12px;
+    color: #9299A7;
+    background: #3A3D44;
+    border-radius: 4px;
+    padding: 3px 10px;
+  }
+
+  .always-on-note {
+    margin-left: auto;
+    font-size: 11px;
+    color: #51566D;
+    white-space: nowrap;
+  }
+
+  /* Section gap */
+  .section-gap { margin-top: 32px; }
+
+  /* Timeline connector line */
+  .timeline-connector {
+    position: relative;
+    height: 24px;
+    margin: 0 4px;
+  }
+
+  .timeline-connector::before {
+    content: '';
+    position: absolute;
+    top: 0; bottom: 0;
+    left: 50%;
+    width: 1px;
+    background: #DEDFE2;
+  }
+
+  /* Planering timing visual */
+  .timing-row {
+    display: flex;
+    gap: 0;
+    margin-top: 8px;
+    position: relative;
+  }
+
+  .timing-block {
+    flex: 1;
+    padding: 0 4px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+  }
+
+  /* The planning dot sits at the RIGHT edge of each period block */
+  .plan-dot-wrap {
+    position: absolute;
+    right: -1px;
+    top: -38px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 2;
+  }
+
+  .plan-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #7D39ED;
+    border: 2px solid #FFFFFF;
+    box-shadow: 0 0 0 1px #7D39ED;
+  }
+
+  .plan-line {
+    width: 1px;
+    height: 24px;
+    background: #7D39ED;
+    opacity: 0.4;
+  }
+
+  .plan-label-small {
+    font-size: 10px;
+    color: #7D39ED;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    margin-top: 3px;
+    white-space: nowrap;
+  }
+
+  /* Footer */
+  .footer {
+    margin-top: 40px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .footer img {
+    height: 18px;
+    opacity: 0.4;
+  }
+
+  .footer-text {
+    font-size: 12px;
+    color: #9299A7;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="section-label">Brand & Marketing</div>
+    <h1>Planning Rhythm</h1>
+    <p class="subtitle">Four periods per year · Rolling 3-period planning · 4 planning sessions</p>
+  </div>
+
+  <!-- 1. Perioder -->
+  <div class="card">
+    <div class="card-label">The four periods of the year</div>
+    <div class="timeline">
+      <div class="period-block" style="position: relative;">
+        <div class="period-pill">
+          <span class="period-name">Spring</span>
+          <span class="period-dates">Mar – May</span>
+        </div>
+        <div style="position: absolute; right: -5px; bottom: -52px; display: flex; flex-direction: column; align-items: center; z-index: 2;">
+          <div class="plan-dot"></div>
+          <div class="plan-line"></div>
+          <div class="plan-label-small">Planning</div>
+          <div style="font-size: 10px; color: #9299A7; margin-top: 1px; white-space: nowrap;">Summer</div>
+        </div>
+      </div>
+      <div class="period-block" style="position: relative;">
+        <div class="period-pill">
+          <span class="period-name">Summer</span>
+          <span class="period-dates">Jun – Aug</span>
+        </div>
+        <div style="position: absolute; right: -5px; bottom: -52px; display: flex; flex-direction: column; align-items: center; z-index: 2;">
+          <div class="plan-dot"></div>
+          <div class="plan-line"></div>
+          <div class="plan-label-small">Planning</div>
+          <div style="font-size: 10px; color: #9299A7; margin-top: 1px; white-space: nowrap;">Autumn</div>
+        </div>
+      </div>
+      <div class="period-block" style="position: relative;">
+        <div class="period-pill">
+          <span class="period-name">Autumn</span>
+          <span class="period-dates">Sep – Nov</span>
+        </div>
+        <div style="position: absolute; right: -5px; bottom: -52px; display: flex; flex-direction: column; align-items: center; z-index: 2;">
+          <div class="plan-dot"></div>
+          <div class="plan-line"></div>
+          <div class="plan-label-small">Planning</div>
+          <div style="font-size: 10px; color: #9299A7; margin-top: 1px; white-space: nowrap;">Winter</div>
+        </div>
+      </div>
+      <div class="period-block" style="position: relative;">
+        <div class="period-pill">
+          <span class="period-name">Winter</span>
+          <span class="period-dates">Dec – Feb</span>
+        </div>
+        <div style="position: absolute; right: -5px; bottom: -52px; display: flex; flex-direction: column; align-items: center; z-index: 2;">
+          <div class="plan-dot"></div>
+          <div class="plan-line"></div>
+          <div class="plan-label-small">Planning</div>
+          <div style="font-size: 10px; color: #9299A7; margin-top: 1px; white-space: nowrap;">Spring</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="height: 62px;"></div>
+
+    <p style="font-size: 12px; color: #9299A7; margin-top: 4px;">
+      ● Planning sessions sit at the end of each period — planning ahead for the next three periods.
+    </p>
+  </div>
+
+  <!-- 2. Rullande 3 perioder -->
+  <div class="card section-gap">
+    <div class="card-label">Rolling 3 periods – what applies at each planning session</div>
+
+    <div class="rolling-grid">
+      <div class="rolling-card locked">
+        <span class="rolling-tag">Period 1 – Locked</span>
+        <span class="rolling-title">Next period</span>
+        <p class="rolling-desc">The plan is set. Execute as-is — no changes are made.</p>
+      </div>
+      <div class="rolling-card review">
+        <span class="rolling-tag">Period 2 – Review</span>
+        <span class="rolling-title">The period after</span>
+        <p class="rolling-desc">Reviewed at each session. Can be adjusted based on new insights or shifting priorities.</p>
+      </div>
+      <div class="rolling-card draft">
+        <span class="rolling-tag">Period 3 – Draft</span>
+        <span class="rolling-title">Further ahead</span>
+        <p class="rolling-desc">Rough directional plan. Fully open to change — a statement of intent.</p>
+      </div>
+    </div>
+
+    <div style="display: flex; align-items: center; gap: 8px; margin-top: 14px; padding: 10px 14px; background: #F7F7F7; border-radius: 8px; border: 1px solid #EEEEEE;">
+      <div style="width: 6px; height: 6px; border-radius: 50%; background: #7D39ED; flex-shrink: 0;"></div>
+      <p style="font-size: 12px; color: #51566D; line-height: 1.4;">
+        At each planning session: <strong style="color: #17181D; font-weight: 500;">Period 1 is locked</strong>, Period 2 is reviewed and adjusted, Period 3 is updated with new direction. Then everything rolls one step forward.
+      </p>
+    </div>
+  </div>
+
+  <!-- 3. Input inför planering -->
+  <div class="card section-gap">
+    <div class="card-label">Input ahead of each planning session</div>
+    <div class="input-grid">
+      <div class="input-item">
+        <div class="input-dot"></div>
+        <div class="input-text">
+          <strong>Pipeline &amp; insights from sales</strong>
+          <span>What's driving deals right now? Which segments are moving?</span>
+        </div>
+      </div>
+      <div class="input-item">
+        <div class="input-dot"></div>
+        <div class="input-text">
+          <strong>Top-performing channels</strong>
+          <span>What worked last period? What should we do more of?</span>
+        </div>
+      </div>
+      <div class="input-item">
+        <div class="input-dot"></div>
+        <div class="input-text">
+          <strong>Competitor check</strong>
+          <span>What's changed in the market? Any new positioning moves?</span>
+        </div>
+      </div>
+      <div class="input-item">
+        <div class="input-dot"></div>
+        <div class="input-text">
+          <strong>Events &amp; trade shows</strong>
+          <span>Which dates drive timing for upcoming periods?</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. Always on -->
+  <div class="card section-gap">
+    <div class="card-label">Always on – not planned per period</div>
+    <p style="font-size: 13px; color: #51566D; margin-bottom: 12px; line-height: 1.5;">These activities run continuously, independent of campaign planning. They are not part of period drafts — they are a separate baseline plan.</p>
+    <div class="always-on-bar">
+      <span class="always-on-label">Always on</span>
+      <div class="always-on-divider"></div>
+      <div class="always-on-items">
+        <span class="always-on-pill">Organic social</span>
+        <span class="always-on-pill">SEO / GEO</span>
+        <span class="always-on-pill">Email nurturing</span>
+      </div>
+      <span class="always-on-note">Own layer · never a campaign</span>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <img src="https://public.getencube.com/Encube-Brand-Assets/ai-assets/claude-skills/encube-brand-guidelines/assets/logos/black_logo_transparent_bg.svg" alt="Encube">
+    <span class="footer-text">Encube Marketing · Planning Rhythm 2026</span>
+  </div>
+
+</div>
+</body>
+</html>
